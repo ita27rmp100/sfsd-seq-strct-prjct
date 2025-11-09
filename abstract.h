@@ -9,12 +9,13 @@ int N_readACC = 0 ,N_writeACC=0;
 
 // Entete declaration
 typedef struct Entete{
-    int nbBlock,nbEnrg;
-}Entete;
+    int nbBlock, nbEnrg;
+} Entete;
 // Record declaration
 typedef struct TypeEnreg{
-    int efface,cle;
-    char nom[20],prenom[20];
+    // int efface,cle;
+    // char nom[20],prenom[20];
+    int key;
 }TypeEnreg;
 typedef struct TNOF{
     FILE *F;
@@ -54,7 +55,7 @@ void fermer(TNOF *fichier){
     fclose(fichier->F);
     free(fichier);
 }
-int Entete(TNOF *fichier,int i){
+int ReadEntete(TNOF *fichier,int i){
     if(i==1) return fichier->Ent.nbBlock;
     if(i==2) return fichier->Ent.nbEnrg;
     return -1; // Error case
@@ -64,11 +65,11 @@ void Aff_Entete(TNOF *fichier,int i, int val){
     if(i==2) fichier->Ent.nbEnrg = val;
 }
 int Alloc_bloc(TNOF *fichier){
-    Aff_Entete(fichier,1,Entete(fichier,1)+1);
-    return Entete(fichier,1);
+    Aff_Entete(fichier,1,ReadEntete(fichier,1)+1);
+    return ReadEntete(fichier,1);
 }
 void LireDir(TNOF *fichier, int i,Bloc *Buf){
-    if(i<=Entete(fichier,1)){
+    if(i<=ReadEntete(fichier,1)){
         fseek(fichier->F,sizeof(Entete)+(i-1)*sizeof(Bloc),SEEK_SET);
         fread(Buf,sizeof(Bloc),1,fichier->F);
         N_readACC++;

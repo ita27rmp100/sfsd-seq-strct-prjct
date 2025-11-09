@@ -4,35 +4,35 @@
 
 #define B 9
 
-typedef struct
-{
-    Entete Entete;
-    TypeBloc *blocs;
-}FICHIER;
-
 
 int main(){
     TNOF* F;
-    F.Entete.nbBlock = B;
-    F.Entete.nbEnrg = 0;
     Bloc buf;
 
     TypeEnreg e;
     int i,j,k,n;
 
-    ouvrir(F,"file.dat","N");
-    printf("n = "); scanf("%i",&n);
+    printf("---- THE PROGRAM HAS BEEN STARTED ----");
+
+    F = ouvrir("file.dat",'N');
+
+    F->Ent.nbBlock = B;
+    F->Ent.nbEnrg = 0;
+
+    printf("How many blocks you want to insert ? \n ");
+    scanf("%i",&n);
     i = 1 ; j = 1;
+    
     for (int k = 1; k < n; k++){
-        printf("..%i.. : e = ",k); scanf("%i",&n);
-        if(j<b*0.7){
-            buf.tab[j] = e ;
+        printf("..%i.. : e = ",k); scanf("%i",&e.key);
+        if(j<B*0.7){
+            buf.tab[j-1].key = e.key ;
             j++;
         }
         else{
             buf.NB = j-1;
             EcrireDir(F,i,buf);
-            buf.tab[1] = e;
+            buf.tab[1].key = e.key;
             i++;
             j = 2;
         }
@@ -40,6 +40,7 @@ int main(){
     buf.NB = j - 1;
     EcrireDir(F,i,buf);
     Aff_Entete(F,1,i);
+    Aff_Entete(F,2,n);
     fermer(F);
     
     
