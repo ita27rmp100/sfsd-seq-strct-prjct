@@ -12,10 +12,10 @@ void recherche(TNOF *F, int key, bool *trv, int *i, int *j) {
     Bloc buf;
     bool conti = true;
     *trv = false;
-    *i = 0;  // ✅ start from 0, not 1
+    *i = 0;
     int nbBlock = ReadEntete(F, 1);
 
-    while (*i < nbBlock && conti) {  // ✅ strictly less than nbBlock
+    while (*i < nbBlock && conti) {  
         LireDir(F, *i, &buf);
         for (*j = 0; *j < buf.NB; (*j)++) {
             if (buf.tab[*j].key == key) {
