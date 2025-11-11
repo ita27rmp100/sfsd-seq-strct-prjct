@@ -1,21 +1,21 @@
 #ifndef MANIP_H
 #define MANIP_H
 
-#define b 20
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "abstract.h"
 
+#define b 20
+
 void recherche(TNOF *F, int key, bool *trv, int *i, int *j) {
     Bloc buf;
     bool conti = true;
     *trv = false;
-    *i = 1;
+    *i = 0;  // ✅ start from 0, not 1
     int nbBlock = ReadEntete(F, 1);
 
-    while (*i <= nbBlock && conti) {
+    while (*i < nbBlock && conti) {  // ✅ strictly less than nbBlock
         LireDir(F, *i, &buf);
         for (*j = 0; *j < buf.NB; (*j)++) {
             if (buf.tab[*j].key == key) {
@@ -30,31 +30,36 @@ void recherche(TNOF *F, int key, bool *trv, int *i, int *j) {
     if (!(*trv)) { *i = -1; *j = -1; }
 }
 
-
-void PhisycalDelete(bool* deleted,int key){
-    TNOF* F;
+void PhisycalDelete(TNOF* F, bool* deleted, int key) {
     Bloc buf1, buf2;
     int i, j;
     bool trouv;
 
-    F = ouvrir("file.dat",'A');
-    recherche(F,key,&trouv,&i,&j);
+    recherche(F, key, &trouv, &i, &j);
 
-    if(!trouv) {
-        printf("---MAKAYEN MA TDELETI ---");
+    if (!trouv) {
+        printf("---MAKAYEN MA TDELETI ---\n");
+        *deleted = false;
+        return;
     }
-    else{
-        LireDir(F,i,&buf1);
-        LireDir(F, ReadEntete(F,1), &buf2);
-        buf1.tab[j] = buf2.tab[buf2.NB];
-        buf2.NB = buf2.NB - 1;
-        EcrireDir(F,i,buf1);
-        EcrireDir(F,ReadEntete(F,1),buf2);
-        if(buf2.NB==0){
-            Aff_Entete(F,1,ReadEntete(F,1)-1);
-        }
-    }
-    fermer(F);
+
+    int lastBlock = ReadEntete(F, 1) - 1;
+    LireDir(F, i, &buf1);
+    LireDir(F, lastBlock, &buf2);
+
+    buf1.tab[j] = buf2.tab[buf2.NB - 1];
+    buf2.NB--;
+
+    EcrireDir(F, i, buf1);
+    EcrireDir(F, lastBlock, buf2);
+
+    if (buf2.NB == 0)
+        Aff_Entete(F, 1, lastBlock);
+
+    int totalRecords = ReadEntete(F, 2);
+    Aff_Entete(F, 2, totalRecords - 1);
+
+    *deleted = true;
 }
 
 #endif
